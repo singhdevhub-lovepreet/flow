@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowState — Notch Dropdown Lockups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="lockup-board">
+
+  <h1 class="lockup-board__title">FlowState</h1>
+  <p class="lockup-board__subtitle">macOS Notch Dropdown &mdash; Hover each notch to expand</p>
+
+  <!-- ==========================================
+       SCREEN 1: DASHBOARD
+       ========================================== -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="screen__notch"><div class="screen__notch-pill"></div></div>
+      <div class="screen__content">
+
+        <div class="ghost-text" style="font-size: 200px; top: 20px; right: -20px; opacity: 0.03; font-family: var(--font-display); font-style: italic;">T</div>
+
+        <div class="text-label" style="margin-bottom: 4px;">Good morning, Lovepreet</div>
+        <h2 class="display-hero display-hero--xl" style="margin-bottom: 20px;">Thursday.</h2>
+
+        <div class="stat-pills" style="margin-bottom: 20px;">
+          <div class="stat-pill">
+            <span class="stat-pill__value">2.4h</span>
+            <span class="stat-pill__label">focused</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill__value">5</span>
+            <span class="stat-pill__label">tasks</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill__value">7d</span>
+            <span class="stat-pill__label">streak</span>
+          </div>
+        </div>
+
+        <button class="cta" style="margin-bottom: 20px;">Enter Flow</button>
+
+        <div class="flex-between" style="margin-bottom: 2px;">
+          <span class="text-label">Today</span>
+          <span class="text-caption">3 remaining</span>
+        </div>
+        <div class="task-row">
+          <div class="task-row__check"></div>
+          <span class="task-row__text">Ship onboarding redesign</span>
+          <span class="task-row__tag">Design</span>
+        </div>
+        <div class="task-row">
+          <div class="task-row__check"></div>
+          <span class="task-row__text">Review PR #482</span>
+          <span class="task-row__time">2:00</span>
+        </div>
+        <div class="task-row" style="border-bottom: none;">
+          <div class="task-row__check task-row__check--done"></div>
+          <span class="task-row__text task-row__text--done">Update API docs</span>
+        </div>
+
+        <div class="spacer-lg"></div>
+        <div class="text-label" style="margin-bottom: 6px;">Last 14 days</div>
+        <div class="contrib-dots">
+          <div class="contrib-dot contrib-dot--l2"></div>
+          <div class="contrib-dot contrib-dot--l4"></div>
+          <div class="contrib-dot contrib-dot--l5"></div>
+          <div class="contrib-dot contrib-dot--l3"></div>
+          <div class="contrib-dot contrib-dot--l5"></div>
+          <div class="contrib-dot contrib-dot--l1"></div>
+          <div class="contrib-dot contrib-dot--l2"></div>
+          <div class="contrib-dot contrib-dot--l4"></div>
+          <div class="contrib-dot contrib-dot--l5"></div>
+          <div class="contrib-dot contrib-dot--l5"></div>
+          <div class="contrib-dot contrib-dot--l3"></div>
+          <div class="contrib-dot contrib-dot--l4"></div>
+          <div class="contrib-dot contrib-dot--l2"></div>
+          <div class="contrib-dot contrib-dot--l5"></div>
+        </div>
+
+      </div>
+    </div>
+    <span class="screen__label">01 &mdash; Dashboard</span>
+  </div>
+
+  <!-- ==========================================
+       SCREEN 2: TODOS
+       ========================================== -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="screen__notch"><div class="screen__notch-pill"></div></div>
+      <div class="screen__content">
+
+        <div class="ghost-text" style="font-size: 240px; top: 30px; right: 10px; opacity: 0.035;">03</div>
+
+        <h2 class="display-hero display-hero--xl" style="margin-bottom: 4px;">Tasks.</h2>
+        <span class="text-caption" style="display: block; margin-bottom: 16px;">3 open &middot; 2 completed today</span>
+
+        <div class="input-bar" style="margin-bottom: 16px;">
+          <span class="input-bar__icon">+</span>
+          <span class="input-bar__placeholder">Add a task...</span>
+        </div>
+
+        <div class="task-row">
+          <div class="task-row__check"></div>
+          <span class="task-row__text">Ship onboarding redesign</span>
+          <span class="task-row__tag">Design</span>
+        </div>
+        <div class="task-row">
+          <div class="task-row__check"></div>
+          <span class="task-row__text">Review PR #482</span>
+          <span class="task-row__tag">Code</span>
+        </div>
+        <div class="task-row">
+          <div class="task-row__check"></div>
+          <span class="task-row__text">Write weekly standup notes</span>
+          <span class="task-row__tag">Work</span>
+        </div>
+        <div class="task-row">
+          <div class="task-row__check task-row__check--done"></div>
+          <span class="task-row__text task-row__text--done">Update API docs</span>
+        </div>
+        <div class="task-row" style="border-bottom: none;">
+          <div class="task-row__check task-row__check--done"></div>
+          <span class="task-row__text task-row__text--done">Fix auth redirect bug</span>
+        </div>
+
+        <div class="spacer-md"></div>
+        <div class="flex-between">
+          <span class="text-label">Completed</span>
+          <span class="text-caption mono">2 / 5</span>
+        </div>
+
+      </div>
+    </div>
+    <span class="screen__label">02 &mdash; Todos</span>
+  </div>
+
+  <!-- ==========================================
+       SCREEN 3: HABITS
+       ========================================== -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="screen__notch"><div class="screen__notch-pill"></div></div>
+      <div class="screen__content">
+
+        <div class="flex-between" style="margin-bottom: 2px;">
+          <h2 class="display-hero display-hero--lg">Habits.</h2>
+          <div style="text-align: right;">
+            <div class="mono" style="font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1;">12</div>
+            <div class="text-caption">day streak</div>
+          </div>
+        </div>
+
+        <div class="spacer-sm"></div>
+
+        <div class="text-label" style="margin-bottom: 6px;">Last 4 weeks</div>
+        <div class="dot-grid" style="margin-bottom: 16px;">
+          <div class="dot-grid__cell" style="background:#1a1a1a"></div>
+          <div class="dot-grid__cell" style="background:#444"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#666"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#1a1a1a"></div>
+          <div class="dot-grid__cell" style="background:#333"></div>
+          <div class="dot-grid__cell" style="background:#666"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#444"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#333"></div>
+          <div class="dot-grid__cell" style="background:#666"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#444"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#666"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#fff"></div>
+          <div class="dot-grid__cell" style="background:#111"></div>
+        </div>
+
+        <div class="flex-between" style="margin-bottom: 14px;">
+          <div>
+            <div class="text-label" style="margin-bottom: 3px;">Today's progress</div>
+            <div style="font-size: 13px; color: var(--text-secondary);">4 of 5 complete</div>
+          </div>
+          <div class="completion-ring">
+            <svg viewBox="0 0 64 64">
+              <circle class="completion-ring__bg" cx="32" cy="32" r="26"></circle>
+              <circle class="completion-ring__fill" cx="32" cy="32" r="26" style="stroke-dasharray: 163.4; stroke-dashoffset: 32.7;"></circle>
+            </svg>
+            <span class="completion-ring__text">80%</span>
+          </div>
+        </div>
+
+        <div class="habit-row">
+          <div class="habit-row__header">
+            <span class="habit-row__name">Meditate</span>
+            <span class="habit-row__progress-text">10 / 10 min</span>
+          </div>
+          <div class="habit-row__bar"><div class="habit-row__bar-fill" style="width: 100%"></div></div>
+        </div>
+        <div class="habit-row">
+          <div class="habit-row__header">
+            <span class="habit-row__name">Read</span>
+            <span class="habit-row__progress-text">22 / 30 min</span>
+          </div>
+          <div class="habit-row__bar"><div class="habit-row__bar-fill" style="width: 73%"></div></div>
+        </div>
+        <div class="habit-row">
+          <div class="habit-row__header">
+            <span class="habit-row__name">Exercise</span>
+            <span class="habit-row__progress-text">45 / 45 min</span>
+          </div>
+          <div class="habit-row__bar"><div class="habit-row__bar-fill" style="width: 100%"></div></div>
+        </div>
+        <div class="habit-row">
+          <div class="habit-row__header">
+            <span class="habit-row__name">Journal</span>
+            <span class="habit-row__progress-text">1 / 1</span>
+          </div>
+          <div class="habit-row__bar"><div class="habit-row__bar-fill" style="width: 100%"></div></div>
+        </div>
+
+      </div>
+    </div>
+    <span class="screen__label">03 &mdash; Habits</span>
+  </div>
+
+  <!-- ==========================================
+       SCREEN 4: FLOW MODE
+       ========================================== -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="screen__notch"><div class="screen__notch-pill"></div></div>
+      <div class="screen__content" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center;">
+
+        <div class="ghost-text" style="font-size: 90px; top: 48%; left: 50%; transform: translate(-50%, -70%); width: auto; font-family: var(--font-ui); font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.04;">RELEASE</div>
+
+        <div style="width: 100%;">
+          <div class="spacer-sm"></div>
+          <div class="text-label" style="letter-spacing: 0.15em;">Flow Mode</div>
+          <div class="spacer-xs"></div>
+          <div class="mono" style="font-size: 12px; color: var(--text-muted);">Stage 3 of 4</div>
+        </div>
+
+        <div class="flow-circle-container">
+          <div class="flow-circle">
+            <div class="flow-circle__inner"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="display-hero" style="font-size: 26px; margin-bottom: 5px;">Release</div>
+          <div class="text-body" style="font-size: 12px; margin-bottom: 14px;">Let go of tension. Breathe out slowly.</div>
+          <div class="stage-dots" style="margin-bottom: 20px;">
+            <div class="stage-dot stage-dot--complete"></div>
+            <div class="stage-dot stage-dot--complete"></div>
+            <div class="stage-dot stage-dot--active"></div>
+            <div class="stage-dot"></div>
+          </div>
+        </div>
+
+        <div style="width: 100%; text-align: left; padding-top: 10px; border-top: 1px solid var(--bg-subtle-border);">
+          <div class="text-label" style="margin-bottom: 6px;">Pre-flow</div>
+          <div class="checklist-item">
+            <div class="checklist-item__box checklist-item__box--checked"></div>
+            <span class="checklist-item__label">Phone on DND</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-item__box checklist-item__box--checked"></div>
+            <span class="checklist-item__label">Water nearby</span>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-item__box"></div>
+            <span class="checklist-item__label">Set an intention</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <span class="screen__label">04 &mdash; Flow Mode</span>
+  </div>
+
+  <!-- ==========================================
+       SCREEN 5: POMODORO
+       ========================================== -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="screen__notch"><div class="screen__notch-pill"></div></div>
+      <div class="screen__content" style="display: flex; flex-direction: column; justify-content: center; position: relative;">
+
+        <div class="timer-ghost">18:32</div>
+
+        <div style="position: relative; z-index: 1;">
+          <div class="text-label" style="text-align: center; letter-spacing: 0.15em; margin-bottom: 4px;">Focus Session</div>
+          <div class="spacer-sm"></div>
+
+          <div class="timer-actual">18:32</div>
+          <div class="spacer-xs"></div>
+
+          <div class="progress-arc">
+            <div class="progress-arc__fill"></div>
+          </div>
+
+          <div class="spacer-sm"></div>
+
+          <div class="control-pills" style="margin-bottom: 20px;">
+            <button class="control-pill control-pill--primary">Pause</button>
+            <button class="control-pill control-pill--ghost">Stop</button>
+          </div>
+
+          <div class="session-dots" style="margin-bottom: 24px;">
+            <div class="session-dot session-dot--filled"></div>
+            <div class="session-dot session-dot--filled"></div>
+            <div class="session-dot session-dot--current"></div>
+            <div class="session-dot"></div>
+          </div>
+
+          <div class="break-card">
+            <span class="break-card__icon" style="font-size: 20px;">&#x1F441;</span>
+            <div class="break-card__content">
+              <div class="break-card__title">Look Away Break</div>
+              <div class="break-card__subtitle">20-20-20 rule &middot; in 4 min</div>
+            </div>
+          </div>
+
+          <div class="spacer-md"></div>
+          <div class="flex-between">
+            <span class="text-caption">Session 3 of 4</span>
+            <span class="text-caption mono">Total: 1h 12m</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <span class="screen__label">05 &mdash; Pomodoro</span>
+  </div>
+
+  <!-- ==========================================
+       SCREEN 6: INSIGHTS
+       ========================================== -->
+  <div class="screen-wrapper">
+    <div class="screen">
+      <div class="screen__notch"><div class="screen__notch-pill"></div></div>
+      <div class="screen__content">
+
+        <h2 class="display-hero display-hero--lg" style="margin-bottom: 4px;">Insights.</h2>
+        <span class="text-caption" style="display: block; margin-bottom: 16px;">This week &middot; Jun 23 &ndash; 29</span>
+
+        <div class="stat-callout" style="margin-bottom: 3px;">
+          <span class="stat-callout__value">14.2</span>
+          <span class="stat-callout__unit">hours</span>
+        </div>
+        <div class="stat-callout__label" style="margin-bottom: 16px;">Total deep focus time</div>
+
+        <div class="text-label" style="margin-bottom: 6px;">Daily Focus</div>
+        <div class="bar-chart">
+          <div class="bar-chart__bar" style="height: 45%"></div>
+          <div class="bar-chart__bar" style="height: 70%"></div>
+          <div class="bar-chart__bar" style="height: 55%"></div>
+          <div class="bar-chart__bar bar-chart__bar--highlight" style="height: 95%"></div>
+          <div class="bar-chart__bar" style="height: 60%"></div>
+          <div class="bar-chart__bar" style="height: 30%"></div>
+          <div class="bar-chart__bar" style="height: 15%"></div>
+        </div>
+        <div class="bar-chart__labels">
+          <span class="bar-chart__label">M</span>
+          <span class="bar-chart__label">T</span>
+          <span class="bar-chart__label">W</span>
+          <span class="bar-chart__label">T</span>
+          <span class="bar-chart__label">F</span>
+          <span class="bar-chart__label">S</span>
+          <span class="bar-chart__label">S</span>
+        </div>
+
+        <div class="spacer-md"></div>
+
+        <div class="text-label" style="margin-bottom: 6px;">Activity Heatmap</div>
+        <div class="heatmap" style="margin-bottom: 16px;">
+          <div class="heatmap__cell" style="background:#111"></div>
+          <div class="heatmap__cell" style="background:#333"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#666"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#333"></div>
+          <div class="heatmap__cell" style="background:#111"></div>
+          <div class="heatmap__cell" style="background:#444"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#666"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#444"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#444"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#666"></div>
+          <div class="heatmap__cell" style="background:#111"></div>
+          <div class="heatmap__cell" style="background:#333"></div>
+          <div class="heatmap__cell" style="background:#333"></div>
+          <div class="heatmap__cell" style="background:#fff"></div>
+          <div class="heatmap__cell" style="background:#666"></div>
+          <div class="heatmap__cell" style="background:#111"></div>
+        </div>
+
+        <div class="text-label" style="margin-bottom: 6px;">Streak Leaders</div>
+        <div class="leaderboard-row">
+          <span class="leaderboard-row__rank">01</span>
+          <div class="leaderboard-row__avatar"></div>
+          <span class="leaderboard-row__name">You</span>
+          <span class="leaderboard-row__stat">12d</span>
+        </div>
+        <div class="leaderboard-row">
+          <span class="leaderboard-row__rank">02</span>
+          <div class="leaderboard-row__avatar"></div>
+          <span class="leaderboard-row__name">Arjun S.</span>
+          <span class="leaderboard-row__stat">9d</span>
+        </div>
+        <div class="leaderboard-row" style="border-bottom: none;">
+          <span class="leaderboard-row__rank">03</span>
+          <div class="leaderboard-row__avatar"></div>
+          <span class="leaderboard-row__name">Mika T.</span>
+          <span class="leaderboard-row__stat">7d</span>
+        </div>
+
+      </div>
+    </div>
+    <span class="screen__label">06 &mdash; Insights</span>
+  </div>
+
+</div>
+
+</body>
+</html>

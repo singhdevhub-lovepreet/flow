@@ -1,0 +1,31 @@
+name: FlowState
+options:
+  bundleIdPrefix: com.flowstate
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+
+targets:
+  FlowState:
+    type: application
+    platform: macOS
+    sources:
+      - FlowState
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flowstate.app
+        PRODUCT_NAME: FlowState
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: FlowState/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        COMBINE_HIDPI_IMAGES: YES
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
+        ENABLE_HARDENED_RUNTIME: YES
+    info:
+      path: FlowState/Info.plist
+      properties:
+        LSUIElement: true
