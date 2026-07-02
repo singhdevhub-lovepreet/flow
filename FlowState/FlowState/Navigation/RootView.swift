@@ -40,5 +40,8 @@ struct RootView: View {
         }
         .frame(width: 440, height: 540)
         .background(FSColors.bgPrimary)
+        .onReceive(NotificationCenter.default.publisher(for: .quickAddRequested)) { _ in
+            selectedTab = .todos
+        }
     }
 }

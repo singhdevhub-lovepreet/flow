@@ -1,6 +1,16 @@
 import AppKit
 import SwiftUI
 import SwiftData
+import Carbon
+
+private func carbonHotKeyHandler(
+    _ nextHandler: EventHandlerCallRef?,
+    _ event: EventRef?,
+    _ userData: UnsafeMutableRawPointer?
+) -> OSStatus {
+    NotificationCenter.default.post(name: .quickAddHotkeyFired, object: nil)
+    return noErr
+}
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -43,11 +53,61 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             pomodoroEngine: pomodoroEngine
         )
 
+        registerGlobalHotkey()
         seedSampleDataIfNeeded()
     }
 
+    private var hotKeyRef: EventHotKeyRef?
+    private var hotKeyObserver: Any?
+
     @objc private func togglePanel() {
         panelController.toggle(relativeTo: statusItem)
+    }
+
+    private func registerGlobalHotkey() {
+        // Install Carbon event handler for global hotkey (no Accessibility permissions needed)
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
+
+        InstallEventHandler(
+            GetApplicationEventTarget(),
+            carbonHotKeyHandler,
+            1,
+            &eventType,
+            nil,
+            nil
+        )
+
+        // Register Cmd+Shift+Return as the hotkey
+        var hotKeyID = EventHotKeyID(
+            signature: OSType(0x464C4F57), // "FLOW"
+            id: 1
+        )
+
+        RegisterEventHotKey(
+            UInt32(kVK_Return),
+            UInt32(shiftKey | cmdKey),
+            hotKeyID,
+            GetApplicationEventTarget(),
+            0,
+            &hotKeyRef
+        )
+
+        // Bridge Carbon callback → MainActor via notification
+        hotKeyObserver = NotificationCenter.default.addObserver(
+            forName: .quickAddHotkeyFired,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            if self.panelController.isVisible {
+                self.panelController.hide()
+            } else {
+                self.panelController.showQuickAdd(relativeTo: self.statusItem)
+            }
+        }
     }
 
     private func seedSampleDataIfNeeded() {

@@ -5,6 +5,7 @@ struct TodosView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \TodoItem.sortOrder) private var todos: [TodoItem]
     @State private var newTodoTitle = ""
+    @FocusState private var isTodoFieldFocused: Bool
 
     private var pendingTodos: [TodoItem] { todos.filter { !$0.isCompleted } }
     private var completedTodos: [TodoItem] { todos.filter { $0.isCompleted } }
@@ -42,6 +43,7 @@ struct TodosView: View {
                             .font(.system(size: 13))
                             .foregroundStyle(FSColors.textPrimary)
                             .textFieldStyle(.plain)
+                            .focused($isTodoFieldFocused)
                             .onSubmit(addTodo)
                     }
                     .padding(.horizontal, 14)
@@ -93,6 +95,12 @@ struct TodosView: View {
                 .screenPadding()
                 .padding(.top, FSSpacing.md)
                 .padding(.bottom, FSSpacing.md)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .quickAddRequested)) { _ in
+            // Slight delay to let the panel appear and tab switch before focusing
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isTodoFieldFocused = true
             }
         }
     }

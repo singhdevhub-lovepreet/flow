@@ -37,4 +37,6 @@ final class NotchPanel: NSPanel {
 
 extension Notification.Name {
     static let panelDidResignKey = Notification.Name("panelDidResignKey")
+    static let quickAddRequested = Notification.Name("quickAddRequested")
+    static let quickAddHotkeyFired = Notification.Name("quickAddHotkeyFired")
 }

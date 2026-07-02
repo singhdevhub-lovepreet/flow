@@ -51,6 +51,13 @@ final class PanelController {
         }
     }
 
+    func showQuickAdd(relativeTo statusItem: NSStatusItem) {
+        NotificationCenter.default.post(name: .quickAddRequested, object: nil)
+        if !panel.isVisible {
+            show(relativeTo: statusItem)
+        }
+    }
+
     func show(relativeTo statusItem: NSStatusItem) {
         guard let screen = NSScreen.main else { return }
         let screenFrame = screen.frame
