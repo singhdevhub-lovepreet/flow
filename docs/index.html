@@ -28,6 +28,7 @@
             --dot-l3: #4a4a4a;
             --dot-l4: #7a7a7a;
             --dot-l5: #ffffff;
+            --accent-maroon: #8b2252;
             --spacing-xs: 6px;
             --spacing-sm: 10px;
             --spacing-md: 16px;
@@ -131,14 +132,11 @@
             position: relative;
         }
 
-        .hero-badge {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            font-weight: 500;
+        .hero-philosophy {
+            font-size: 15px;
             color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 32px;
+            margin-bottom: 48px;
+            letter-spacing: 0.2px;
         }
 
         .hero h1 {
@@ -151,35 +149,123 @@
             color: var(--text-primary);
         }
 
-        .hero-sub {
-            font-size: 16px;
+        .hero-intro {
+            font-size: 18px;
             color: var(--text-secondary);
-            max-width: 480px;
+            max-width: 560px;
             line-height: 1.7;
-            margin-bottom: 48px;
+            margin-bottom: 56px;
         }
 
-        .hero-hotkey {
-            display: inline-flex;
+        .hero-intro .rotating-wrapper {
+            display: inline-block;
+            position: relative;
+            height: 1.5em;
+            overflow: hidden;
+            vertical-align: bottom;
+            width: 220px;
+            text-align: left;
+        }
+
+        .rotating-track {
+            display: flex;
+            flex-direction: column;
+            animation: rotate-tasks 10s ease-in-out infinite;
+        }
+
+        .rotating-item {
+            font-family: var(--font-display);
+            font-style: italic;
+            color: var(--accent-maroon);
+            height: 1.5em;
+            line-height: 1.5em;
+            white-space: nowrap;
+        }
+
+        @keyframes rotate-tasks {
+            0%, 16%   { transform: translateY(0); }
+            20%, 36%  { transform: translateY(-1.5em); }
+            40%, 56%  { transform: translateY(-3.0em); }
+            60%, 76%  { transform: translateY(-4.5em); }
+            80%, 96%  { transform: translateY(-6.0em); }
+            100%      { transform: translateY(0); }
+        }
+
+        /* ── Workflow Strip ──────────────────────── */
+
+        .workflow {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 56px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .wf-step {
+            display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 48px;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-md);
+        }
+
+        .wf-keys {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .wf-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .wf-arrow {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 0 6px;
+            flex-shrink: 0;
+        }
+
+        .wf-step.muted {
+            background: transparent;
+            border-color: var(--bg-card-border);
+        }
+
+        .wf-step.muted .wf-label {
+            color: var(--text-secondary);
+        }
+
+        .wf-step.async-step {
+            background: transparent;
+            border: 1px dashed var(--text-muted);
+        }
+
+        .wf-step.async-step .wf-label {
+            color: var(--text-muted);
+            font-size: 11px;
         }
 
         .key {
             font-family: var(--font-mono);
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             color: var(--text-secondary);
-            background: var(--bg-card);
+            background: var(--bg-primary);
             border: 1px solid var(--bg-card-border);
-            padding: 6px 12px;
-            border-radius: 8px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            line-height: 1;
         }
 
         .key-plus {
             font-family: var(--font-mono);
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
         }
 
@@ -775,11 +861,26 @@
             .int-grid { grid-template-columns: 1fr; }
             .panel-container { max-width: 100%; }
             footer { flex-direction: column; gap: 16px; text-align: center; }
-            .hero-hotkey { flex-wrap: wrap; justify-content: center; }
+            .workflow { gap: 0; }
+            .wf-arrow { padding: 0 4px; }
+            .wf-step { padding: 8px 10px; }
+        }
+
+        @media (max-width: 580px) {
+            .workflow {
+                flex-direction: column;
+                gap: 0;
+            }
+            .wf-arrow {
+                transform: rotate(90deg);
+                padding: 4px 0;
+            }
         }
 
         @media (max-width: 480px) {
             .hero h1 { font-size: 40px; }
+            .hero-intro { font-size: 15px; }
+            .hero-intro .rotating-wrapper { width: 180px; }
             .features-header h2,
             .how-header h2,
             .examples-header h2,
@@ -804,15 +905,43 @@
 
     <!-- Hero -->
     <section class="hero">
-        <div class="hero-badge">macOS menu bar utility</div>
+        <p class="hero-philosophy">Everything got smart. Your todo tracker didn't.</p>
         <h1>FlowState</h1>
-        <p class="hero-sub">
-            An async task executor that sits in your menu bar. Type what you need done — schedule meetings, play music, control your Mac — and it runs silently in the background, powered by Claude.
+        <p class="hero-intro">
+            Keeps you in flow state by offloading distracting tasks
+            <span class="rotating-wrapper"><span class="rotating-track">
+                <span class="rotating-item">schedule meetings</span>
+                <span class="rotating-item">play songs</span>
+                <span class="rotating-item">get restaurant reviews</span>
+                <span class="rotating-item">send slack messages</span>
+                <span class="rotating-item">set do not disturb</span>
+            </span></span>
+            async.
         </p>
-        <div class="hero-hotkey">
-            <span class="key">Option</span>
-            <span class="key-plus">+</span>
-            <span class="key">Space</span>
+
+        <!-- Workflow Strip -->
+        <div class="workflow">
+            <div class="wf-step">
+                <div class="wf-keys">
+                    <span class="key">Cmd</span>
+                    <span class="key-plus">+</span>
+                    <span class="key">Shift</span>
+                    <span class="key-plus">+</span>
+                    <span class="key">Enter</span>
+                </div>
+            </div>
+            <span class="wf-arrow">--></span>
+            <div class="wf-step muted">
+                <span class="wf-label">add todo</span>
+            </div>
+            <span class="wf-arrow">--></span>
+            <div class="wf-step">
+                <span class="wf-label">get back to work</span>
+            </div>
+            <span class="wf-arrow">--></span>
+            <div class="wf-step async-step">
+                <span class="wf-label">distracting things happen in background</span>
+            </div>
         </div>
 
         <!-- Panel Mockup -->
