@@ -11,6 +11,8 @@ struct MCPCatalogEntry: Identifiable {
     let description: String
     let icon: String
     let color: Color
+    /// Path to a macOS .app bundle to load its real icon (e.g. "/System/Applications/Calendar.app")
+    let appIconPath: String?
     let command: String
     let args: [String]
     let requiredEnvVars: [EnvVarField]
@@ -44,6 +46,7 @@ private let catalog: [MCPCatalogEntry] = [
         description: "Calendar, Mail, Finder, Apple Music, System controls, and 200+ actions",
         icon: "desktopcomputer",
         color: .orange,
+        appIconPath: "/System/Applications/Automator.app",
         command: "npx",
         args: ["-y", "@steipete/macos-automator-mcp"],
         requiredEnvVars: [],
@@ -61,6 +64,7 @@ private let catalog: [MCPCatalogEntry] = [
         description: "Browse the web, interact with pages, use your logged-in sessions",
         icon: "globe",
         color: .blue,
+        appIconPath: "/Applications/Safari.app",
         command: "npx",
         args: ["-y", "@playwright/mcp@latest", "--extension"],
         requiredEnvVars: [],
@@ -78,6 +82,7 @@ private let catalog: [MCPCatalogEntry] = [
         description: "Run any macOS Shortcut by name — automate custom workflows",
         icon: "square.grid.3x3.topleft.filled",
         color: .pink,
+        appIconPath: "/System/Applications/Shortcuts.app",
         command: "npx",
         args: ["-y", "mcp-server-apple-shortcuts"],
         requiredEnvVars: [],
@@ -93,6 +98,7 @@ private let catalog: [MCPCatalogEntry] = [
         description: "Send messages, read channels — no bot or admin approval needed",
         icon: "number",
         color: .purple,
+        appIconPath: "/Applications/Slack.app",
         command: "npx",
         args: ["-y", "slack-mcp-server"],
         requiredEnvVars: [
@@ -262,12 +268,7 @@ struct MCPsView: View {
                 VStack(alignment: .leading, spacing: FSSpacing.lg) {
                     // Icon + title
                     HStack(spacing: 12) {
-                        Image(systemName: entry.icon)
-                            .font(.system(size: 22))
-                            .foregroundStyle(entry.color)
-                            .frame(width: 44, height: 44)
-                            .background(entry.color.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        AppIconView(entry: entry, size: 44)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(entry.displayName)
@@ -435,6 +436,30 @@ struct MCPsView: View {
     }
 }
 
+// MARK: - App Icon View
+
+private struct AppIconView: View {
+    let entry: MCPCatalogEntry
+    let size: CGFloat
+
+    var body: some View {
+        if let path = entry.appIconPath,
+           FileManager.default.fileExists(atPath: path) {
+            Image(nsImage: NSWorkspace.shared.icon(forFile: path))
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+        } else {
+            Image(systemName: entry.icon)
+                .font(.system(size: size * 0.45))
+                .foregroundStyle(entry.color)
+                .frame(width: size, height: size)
+                .background(entry.color.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: size * 0.22))
+        }
+    }
+}
+
 // MARK: - Catalog Row
 
 private struct MCPCatalogRow: View {
@@ -445,12 +470,7 @@ private struct MCPCatalogRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: entry.icon)
-                .font(.system(size: 16))
-                .foregroundStyle(entry.color)
-                .frame(width: 32, height: 32)
-                .background(entry.color.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+            AppIconView(entry: entry, size: 32)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.displayName)
