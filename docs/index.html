@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowState — Async Task Execution for macOS</title>
+    <meta name="description" content="FlowState sits in your menu bar and executes tasks autonomously. Schedule meetings, play music, control your Mac — all from a single text field, powered by Claude.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #000000;
+            --bg-surface: #0a0a0a;
+            --bg-card: #111111;
+            --bg-card-border: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --text-muted: #444444;
+            --dot-l1: #1a1a1a;
+            --dot-l2: #2a2a2a;
+            --dot-l3: #4a4a4a;
+            --dot-l4: #7a7a7a;
+            --dot-l5: #ffffff;
+            --spacing-xs: 6px;
+            --spacing-sm: 10px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --screen-padding: 28px;
+            --radius-sm: 3px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-full: 9999px;
+            --font-display: 'Instrument Serif', serif;
+            --font-ui: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        html {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Nav ────────────────────────────────── */
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 40px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--bg-card-border);
+        }
+
+        .nav-logo {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-cta {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--bg-primary) !important;
+            background: var(--text-primary);
+            padding: 8px 20px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .nav-cta:hover {
+            opacity: 0.85;
+        }
+
+        /* ── Hero ───────────────────────────────── */
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 40px 80px;
+            position: relative;
+        }
+
+        .hero-badge {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 32px;
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 400;
+            line-height: 1.0;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .hero-sub {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 480px;
+            line-height: 1.7;
+            margin-bottom: 48px;
+        }
+
+        .hero-hotkey {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 48px;
+        }
+
+        .key {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .key-plus {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ── Panel Mock ─────────────────────────── */
+
+        .panel-container {
+            position: relative;
+            margin: 0 auto;
+            max-width: 440px;
+            width: 100%;
+        }
+
+        .panel {
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 0 80px rgba(255, 255, 255, 0.03), 0 0 2px rgba(255, 255, 255, 0.06);
+        }
+
+        .panel-notch {
+            width: 40px;
+            height: 5px;
+            background: var(--text-muted);
+            opacity: 0.5;
+            border-radius: var(--radius-sm);
+            margin: 12px auto 0;
+        }
+
+        .panel-inner {
+            padding: var(--screen-padding);
+        }
+
+        .panel-header {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 36px;
+            font-weight: 400;
+            color: var(--text-primary);
+        }
+
+        .panel-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* ── Input ──────────────────────────────── */
+
+        .input-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .input-icon {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ── Task Rows ──────────────────────────── */
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px var(--spacing-md);
+        }
+
+        .task-row + .task-row {
+            border-top: 1px solid var(--bg-card-border);
+        }
+
+        .task-circle {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1.5px solid var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .task-circle.done {
+            border-color: var(--text-primary);
+            background: var(--text-primary);
+            position: relative;
+        }
+
+        .task-circle.done::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 5px;
+            width: 4px;
+            height: 7px;
+            border: solid var(--bg-primary);
+            border-width: 0 1.5px 1.5px 0;
+            transform: rotate(45deg);
+        }
+
+        .task-title {
+            font-size: 13px;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .task-title.completed {
+            color: var(--text-secondary);
+            text-decoration: line-through;
+            text-decoration-color: var(--text-muted);
+        }
+
+        .task-tag {
+            font-size: 10px;
+            color: var(--text-secondary);
+            padding: 3px 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-full);
+        }
+
+        .task-status {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+        }
+
+        .status-executing {
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-done {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ── Stat Pills ─────────────────────────── */
+
+        .stat-pills {
+            display: flex;
+            gap: 8px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-full);
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Contribution Dots ───────────────────── */
+
+        .dots-grid {
+            display: grid;
+            grid-template-columns: repeat(14, 8px);
+            gap: 3px;
+            margin-top: var(--spacing-sm);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+        }
+
+        /* ── Section Label ───────────────────────── */
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* ── Features ────────────────────────────── */
+
+        .features {
+            padding: 120px 40px;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .features-header h2 {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 44px;
+            font-weight: 400;
+            margin-bottom: 16px;
+        }
+
+        .features-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--bg-card-border);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .feature-cell {
+            background: var(--bg-card);
+            padding: 32px 28px;
+        }
+
+        .feature-mono {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .feature-cell h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .feature-cell p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ── How It Works ────────────────────────── */
+
+        .how-it-works {
+            padding: 120px 40px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .how-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .how-header h2 {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 44px;
+            font-weight: 400;
+            margin-bottom: 16px;
+        }
+
+        .how-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 20px;
+            padding: 24px 0;
+        }
+
+        .step + .step {
+            border-top: 1px solid var(--bg-card-border);
+        }
+
+        .step-num {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--bg-card-border);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .step-content p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .step-cmd {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        /* ── Examples ────────────────────────────── */
+
+        .examples {
+            padding: 120px 40px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .examples-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .examples-header h2 {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 44px;
+            font-weight: 400;
+            margin-bottom: 16px;
+        }
+
+        .examples-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .example-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .example-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--bg-card-border);
+        }
+
+        .example-task {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .example-route {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Integrations ────────────────────────── */
+
+        .integrations {
+            padding: 120px 40px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .integrations-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .integrations-header h2 {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 44px;
+            font-weight: 400;
+            margin-bottom: 16px;
+        }
+
+        .integrations-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .int-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            background: var(--bg-card-border);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .int-cell {
+            background: var(--bg-card);
+            padding: 24px;
+        }
+
+        .int-icon {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .int-cell h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .int-cell p {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ── Footer ──────────────────────────────── */
+
+        footer {
+            padding: 48px 40px;
+            border-top: 1px solid var(--bg-card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 960px;
+            margin: 80px auto 0;
+        }
+
+        .footer-left {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-right a {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-right a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ── Breathing Animation ─────────────────── */
+
+        .breathing-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 50%, transparent 70%);
+            animation: breathe 6s ease-in-out infinite;
+            margin: 48px auto;
+            position: relative;
+        }
+
+        .breathing-circle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .breathing-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            animation: breathe-dot 6s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.85); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 1.0; }
+        }
+
+        @keyframes breathe-dot {
+            0%, 100% { transform: translate(-50%, -50%) scale(1.0); opacity: 0.4; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1.0; }
+        }
+
+        /* ── Ghost Number ────────────────────────── */
+
+        .ghost-num {
+            position: absolute;
+            top: 8px;
+            right: var(--screen-padding);
+            font-family: var(--font-mono);
+            font-size: 52px;
+            font-weight: 700;
+            color: var(--text-primary);
+            opacity: 0.06;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        /* ── Responsive ──────────────────────────── */
+
+        @media (max-width: 768px) {
+            nav { padding: 14px 20px; }
+            .nav-links { display: none; }
+            .hero { padding: 100px 20px 60px; }
+            .features, .how-it-works, .examples, .integrations { padding: 80px 20px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .int-grid { grid-template-columns: 1fr; }
+            .panel-container { max-width: 100%; }
+            footer { flex-direction: column; gap: 16px; text-align: center; }
+            .hero-hotkey { flex-wrap: wrap; justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 40px; }
+            .features-header h2,
+            .how-header h2,
+            .examples-header h2,
+            .integrations-header h2 { font-size: 32px; }
+            .stat-pills { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nav -->
+    <nav>
+        <div class="nav-logo">FlowState</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how">How it works</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="https://github.com/singhdevhub-lovepreet/flow" target="_blank">GitHub</a></li>
+        </ul>
+        <a href="https://github.com/singhdevhub-lovepreet/flow" class="nav-cta" target="_blank">Get FlowState</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">macOS menu bar utility</div>
+        <h1>FlowState</h1>
+        <p class="hero-sub">
+            An async task executor that sits in your menu bar. Type what you need done — schedule meetings, play music, control your Mac — and it runs silently in the background, powered by Claude.
+        </p>
+        <div class="hero-hotkey">
+            <span class="key">Option</span>
+            <span class="key-plus">+</span>
+            <span class="key">Space</span>
+        </div>
+
+        <!-- Panel Mockup -->
+        <div class="panel-container">
+            <div class="panel">
+                <div class="panel-notch"></div>
+                <div class="panel-inner" style="position: relative;">
+                    <div class="ghost-num">3</div>
+                    <div class="panel-header">
+                        <div class="panel-title">Tasks</div>
+                        <div class="panel-subtitle">3 remaining</div>
+                    </div>
+
+                    <!-- Input -->
+                    <div class="input-bar">
+                        <span class="input-icon">+</span>
+                        <span class="input-text">Add a task...</span>
+                    </div>
+
+                    <!-- Tasks Card -->
+                    <div class="card" style="margin-bottom: var(--spacing-lg);">
+                        <div class="task-row">
+                            <div class="task-circle"></div>
+                            <span class="task-title">Schedule standup with team at 10am</span>
+                            <span class="task-status status-executing">running</span>
+                        </div>
+                        <div class="task-row">
+                            <div class="task-circle"></div>
+                            <span class="task-title">Play Blinding Lights</span>
+                            <span class="task-tag">entertainment</span>
+                        </div>
+                        <div class="task-row">
+                            <div class="task-circle"></div>
+                            <span class="task-title">Turn on Do Not Disturb</span>
+                            <span class="task-tag">system</span>
+                        </div>
+                    </div>
+
+                    <!-- Completed -->
+                    <div class="section-label">Completed</div>
+                    <div class="card">
+                        <div class="task-row">
+                            <div class="task-circle done"></div>
+                            <span class="task-title completed">Send project update to #general</span>
+                            <span class="task-status status-done">done</span>
+                        </div>
+                        <div class="task-row">
+                            <div class="task-circle done"></div>
+                            <span class="task-title completed">Create reminder to buy groceries</span>
+                            <span class="task-status status-done">done</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="features-header">
+            <h2>Not another todo app</h2>
+            <p>FlowState doesn't just list your tasks. It classifies them, routes them to the right system, and executes them autonomously.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-cell">
+                <div class="feature-mono">01</div>
+                <h3>Async Execution</h3>
+                <p>Tasks run in the background. No dialogs, no interruptions. Add a task, keep working — it completes silently.</p>
+            </div>
+            <div class="feature-cell">
+                <div class="feature-mono">02</div>
+                <h3>Auto Classification</h3>
+                <p>Every task is instantly categorized — work, system, entertainment, communication — and routed to the right MCP server.</p>
+            </div>
+            <div class="feature-cell">
+                <div class="feature-mono">03</div>
+                <h3>Mac Automation</h3>
+                <p>Calendar, Mail, Finder, Apple Music, System Settings, Reminders, Notes — 200+ macOS actions via AppleScript.</p>
+            </div>
+            <div class="feature-cell">
+                <div class="feature-mono">04</div>
+                <h3>Browser Control</h3>
+                <p>Navigate websites, fill forms, post tweets, interact with any web app — using your existing logged-in sessions.</p>
+            </div>
+            <div class="feature-cell">
+                <div class="feature-mono">05</div>
+                <h3>Focus Tracking</h3>
+                <p>Built-in Flow Mode and Pomodoro timer. All focus time and completed tasks sync to your daily stats automatically.</p>
+            </div>
+            <div class="feature-cell">
+                <div class="feature-mono">06</div>
+                <h3>Notch-Native UI</h3>
+                <p>Lives in the menu bar. Drops down from the notch like it belongs there. Dismisses when you click away.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how">
+        <div class="how-header">
+            <h2>Three keystrokes</h2>
+            <p>Option+Space opens FlowState. Type what you need. Press Return. Done.</p>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h3>Type a task in natural language</h3>
+                    <p>"Schedule a meeting with John tomorrow at 2pm" or "Play Bohemian Rhapsody" or "Turn on Dark Mode" — just describe what you want done.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h3>Claude classifies and routes</h3>
+                    <p>The task is analyzed instantly. Calendar events go to Mac Automator. Web tasks go to Playwright. Shortcuts go to Apple Shortcuts. The right tool, every time.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h3>Executed silently in the background</h3>
+                    <p>No windows pop up. No focus stolen. The task completes while you keep working. Check the result when you're ready.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="breathing-circle"></div>
+    </section>
+
+    <!-- Examples -->
+    <section class="examples" id="examples">
+        <div class="examples-header">
+            <h2>What you can say</h2>
+            <p>Natural language in, real actions out.</p>
+        </div>
+
+        <div class="example-list">
+            <div class="example-row">
+                <span class="example-task">Schedule lunch with Sarah tomorrow at noon</span>
+                <span class="example-route">calendar</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">Play Blinding Lights by The Weeknd</span>
+                <span class="example-route">apple music</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">Turn on Do Not Disturb</span>
+                <span class="example-route">system</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">Set brightness to 50%</span>
+                <span class="example-route">system</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">Open the Downloads folder</span>
+                <span class="example-route">finder</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">Send a message to #general on Slack</span>
+                <span class="example-route">slack</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">Reply to the latest tweet on my timeline</span>
+                <span class="example-route">browser</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">Create a reminder to buy groceries</span>
+                <span class="example-route">reminders</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">What's on my calendar today?</span>
+                <span class="example-route">calendar</span>
+            </div>
+            <div class="example-row">
+                <span class="example-task">Run my Morning Routine shortcut</span>
+                <span class="example-route">shortcuts</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integrations -->
+    <section class="integrations" id="integrations">
+        <div class="integrations-header">
+            <h2>Four servers, everything covered</h2>
+            <p>Clean MCP stack. No bloat. Each server earns its place.</p>
+        </div>
+
+        <div class="int-grid">
+            <div class="int-cell">
+                <div class="int-icon">mac</div>
+                <h3>Mac Automator</h3>
+                <p>Calendar, Mail, Finder, Apple Music, System controls, Reminders, Notes. 200+ AppleScript actions.</p>
+            </div>
+            <div class="int-cell">
+                <div class="int-icon">browser</div>
+                <h3>Web Browser</h3>
+                <p>Playwright-powered. Uses your existing browser sessions. No login needed.</p>
+            </div>
+            <div class="int-cell">
+                <div class="int-icon">shortcuts</div>
+                <h3>Apple Shortcuts</h3>
+                <p>Run any macOS Shortcut by name. Leverage your existing automation library.</p>
+            </div>
+            <div class="int-cell">
+                <div class="int-icon">slack</div>
+                <h3>Slack</h3>
+                <p>Send messages, read channels. Uses browser cookies — no bot or admin approval.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-left">FlowState &mdash; built for focus</div>
+        <div class="footer-right">
+            <a href="https://github.com/singhdevhub-lovepreet/flow" target="_blank">Source</a>
+            <a href="https://github.com/singhdevhub-lovepreet/flow/releases" target="_blank">Releases</a>
+        </div>
+    </footer>
+
+</body>
+</html>
