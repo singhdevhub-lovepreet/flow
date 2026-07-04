@@ -497,20 +497,20 @@
             margin-bottom: var(--spacing-sm);
         }
 
-        /* ── Features ────────────────────────────── */
+        /* ── Capabilities (Macatron-style) ──────── */
 
-        .features {
+        .capabilities {
             padding: 120px 40px;
             max-width: 960px;
             margin: 0 auto;
         }
 
-        .features-header {
+        .capabilities-header {
             text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 64px;
         }
 
-        .features-header h2 {
+        .capabilities-header h2 {
             font-family: var(--font-display);
             font-style: italic;
             font-size: 44px;
@@ -518,84 +518,87 @@
             margin-bottom: 16px;
         }
 
-        .features-header p {
+        .capabilities-header p {
             font-size: 14px;
             color: var(--text-secondary);
-            max-width: 400px;
+            max-width: 460px;
             margin: 0 auto;
             line-height: 1.6;
         }
 
-        .feature-grid {
+        .cap-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .cap-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .cap-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .cap-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 11px;
+            margin-bottom: 16px;
             display: flex;
-            flex-direction: column;
-            gap: 0;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
 
-        .feature-cell {
-            display: flex;
-            gap: 24px;
-            padding: 28px 0;
-            border-bottom: 1px solid var(--bg-card-border);
-            align-items: flex-start;
-            transition: opacity 0.3s;
+        .cap-icon svg {
+            position: relative;
+            z-index: 1;
         }
 
-        .feature-cell:first-child {
-            border-top: 1px solid var(--bg-card-border);
-        }
-
-        .feature-cell:hover {
-            opacity: 1;
-        }
-
-        .feature-mono {
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            flex-shrink: 0;
-            width: 32px;
-            padding-top: 2px;
-        }
-
-        .feature-text h3 {
-            font-size: 15px;
+        .cap-card h3 {
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 6px;
+            margin-bottom: 12px;
         }
 
-        .feature-text p {
+        .cap-prompt {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+
+        .cap-prompt-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1.5px solid var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .cap-prompt span {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .cap-card p {
             font-size: 13px;
             color: var(--text-secondary);
             line-height: 1.6;
-        }
-
-        .feature-focus-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-primary);
-            flex-shrink: 0;
-            margin-top: 7px;
-            opacity: 0;
-            animation: feature-pulse 12s ease-in-out infinite;
-        }
-
-        .feature-cell:nth-child(1) .feature-focus-dot { animation-delay: 0s; }
-        .feature-cell:nth-child(2) .feature-focus-dot { animation-delay: 2s; }
-        .feature-cell:nth-child(3) .feature-focus-dot { animation-delay: 4s; }
-        .feature-cell:nth-child(4) .feature-focus-dot { animation-delay: 6s; }
-        .feature-cell:nth-child(5) .feature-focus-dot { animation-delay: 8s; }
-        .feature-cell:nth-child(6) .feature-focus-dot { animation-delay: 10s; }
-
-        @keyframes feature-pulse {
-            0%, 14% { opacity: 0; transform: scale(0.5); }
-            16%, 30% { opacity: 1; transform: scale(1); }
-            33%, 100% { opacity: 0; transform: scale(0.5); }
         }
 
         /* ── How It Works ────────────────────────── */
@@ -917,8 +920,8 @@
             nav { padding: 14px 20px; }
             .nav-links { display: none; }
             .hero { padding: 100px 20px 60px; }
-            .features, .how-it-works, .examples, .integrations { padding: 80px 20px; }
-            .feature-cell { gap: 16px; }
+            .capabilities, .how-it-works, .examples, .integrations { padding: 80px 20px; }
+            .cap-grid { grid-template-columns: 1fr; }
             .int-grid { grid-template-columns: 1fr; }
             .panel-container { max-width: 100%; }
             footer { flex-direction: column; gap: 16px; text-align: center; }
@@ -942,7 +945,7 @@
             .hero h1 { font-size: 40px; }
             .hero-intro { font-size: 15px; }
             .hero-intro .rotating-wrapper { width: 200px; }
-            .features-header h2,
+            .capabilities-header h2,
             .how-header h2,
             .examples-header h2,
             .integrations-header h2 { font-size: 32px; }
@@ -1054,61 +1057,106 @@
         </div>
     </section>
 
-    <!-- Features -->
-    <section class="features" id="features">
-        <div class="features-header">
-            <h2>Not another todo app</h2>
-            <p>FlowState doesn't just list your tasks. It classifies them, routes them to the right system, and executes them autonomously.</p>
+    <!-- Capabilities -->
+    <section class="capabilities" id="features">
+        <div class="capabilities-header">
+            <h2>What it controls</h2>
+            <p>Type what you need in plain English. FlowState routes it to the right macOS app and executes silently.</p>
         </div>
 
-        <div class="feature-grid">
-            <div class="feature-cell">
-                <div class="feature-focus-dot"></div>
-                <div class="feature-mono">01</div>
-                <div class="feature-text">
-                    <h3>Async Execution</h3>
-                    <p>Tasks run in the background. No dialogs, no interruptions. Add a task, keep working — it completes silently.</p>
+        <div class="cap-grid">
+            <!-- Calendar -->
+            <div class="cap-card">
+                <div class="cap-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect x="4" y="8" width="40" height="36" rx="8" fill="#fff"/>
+                        <rect x="4" y="8" width="40" height="11" rx="8" fill="#ff3b30"/>
+                        <rect x="4" y="15" width="40" height="4" fill="#ff3b30"/>
+                        <text x="24" y="38" text-anchor="middle" font-family="'Inter', sans-serif" font-size="20" font-weight="600" fill="#1a1a1a">9</text>
+                    </svg>
                 </div>
+                <h3>Calendar & Scheduling</h3>
+                <div class="cap-prompt"><div class="cap-prompt-dot"></div><span>Am I free at 3?</span></div>
+                <p>Check your day, create events, find free slots, detect conflicts. Handles "next Tuesday," recurring meetings, and cross-calendar queries.</p>
             </div>
-            <div class="feature-cell">
-                <div class="feature-focus-dot"></div>
-                <div class="feature-mono">02</div>
-                <div class="feature-text">
-                    <h3>Auto Classification</h3>
-                    <p>Every task is instantly categorized — work, system, entertainment, communication — and routed to the right MCP server.</p>
+
+            <!-- Music -->
+            <div class="cap-card">
+                <div class="cap-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect x="4" y="4" width="40" height="40" rx="10" fill="url(#music-grad)"/>
+                        <path d="M20 33V17l12-4v16" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <circle cx="17" cy="33" r="3.5" fill="#fff"/>
+                        <circle cx="29" cy="29" r="3.5" fill="#fff"/>
+                        <defs><linearGradient id="music-grad" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#fc3c44"/><stop offset="1" stop-color="#e8234a"/></linearGradient></defs>
+                    </svg>
                 </div>
+                <h3>Music & Podcasts</h3>
+                <div class="cap-prompt"><div class="cap-prompt-dot"></div><span>Play something chill for focusing</span></div>
+                <p>Play, pause, skip, search by artist or mood. Queue management, volume control, and podcast episodes — all in the background.</p>
             </div>
-            <div class="feature-cell">
-                <div class="feature-focus-dot"></div>
-                <div class="feature-mono">03</div>
-                <div class="feature-text">
-                    <h3>Mac Automation</h3>
-                    <p>Calendar, Mail, Finder, Apple Music, System Settings, Reminders, Notes — 200+ macOS actions via AppleScript.</p>
+
+            <!-- Mail & Messages -->
+            <div class="cap-card">
+                <div class="cap-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect x="4" y="4" width="40" height="40" rx="10" fill="url(#mail-grad)"/>
+                        <rect x="10" y="16" width="28" height="18" rx="3" fill="none" stroke="#fff" stroke-width="2"/>
+                        <path d="M10 18l14 9 14-9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs><linearGradient id="mail-grad" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#3d9bf0"/><stop offset="1" stop-color="#1d7de8"/></linearGradient></defs>
+                    </svg>
                 </div>
+                <h3>Messages & Mail</h3>
+                <div class="cap-prompt"><div class="cap-prompt-dot"></div><span>Email Sarah about the 3 PM meeting</span></div>
+                <p>Send iMessages, check unread email, compose replies. Resolves contacts by name — works across Mail and Messages.</p>
             </div>
-            <div class="feature-cell">
-                <div class="feature-focus-dot"></div>
-                <div class="feature-mono">04</div>
-                <div class="feature-text">
-                    <h3>Browser Control</h3>
-                    <p>Navigate websites, fill forms, post tweets, interact with any web app — using your existing logged-in sessions.</p>
+
+            <!-- System -->
+            <div class="cap-card">
+                <div class="cap-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect x="4" y="4" width="40" height="40" rx="10" fill="#636366"/>
+                        <circle cx="24" cy="24" r="8" fill="none" stroke="#fff" stroke-width="2"/>
+                        <path d="M24 14v-2M24 36v-2M34 24h2M12 24h2M31.07 16.93l1.41-1.41M15.52 32.48l1.41-1.41M31.07 31.07l1.41 1.41M15.52 15.52l1.41 1.41" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
                 </div>
+                <h3>System Controls</h3>
+                <div class="cap-prompt"><div class="cap-prompt-dot"></div><span>DND on and dim the screen</span></div>
+                <p>Volume, brightness, dark mode, DND, Focus modes, battery, lock, sleep. Say "it's too bright" — FlowState lowers the brightness.</p>
             </div>
-            <div class="feature-cell">
-                <div class="feature-focus-dot"></div>
-                <div class="feature-mono">05</div>
-                <div class="feature-text">
-                    <h3>Focus Tracking</h3>
-                    <p>Built-in Flow Mode and Pomodoro timer. All focus time and completed tasks sync to your daily stats automatically.</p>
+
+            <!-- Finder -->
+            <div class="cap-card">
+                <div class="cap-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect x="4" y="4" width="40" height="40" rx="10" fill="url(#finder-grad)"/>
+                        <ellipse cx="24" cy="26" rx="10" ry="12" fill="none" stroke="#fff" stroke-width="2"/>
+                        <circle cx="20" cy="23" r="1.5" fill="#fff"/>
+                        <circle cx="28" cy="23" r="1.5" fill="#fff"/>
+                        <path d="M20 30c1.5 2 6.5 2 8 0" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="24" y1="14" x2="24" y2="27" stroke="#fff" stroke-width="1.5"/>
+                        <defs><linearGradient id="finder-grad" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#4cc2f1"/><stop offset="1" stop-color="#1e9de8"/></linearGradient></defs>
+                    </svg>
                 </div>
+                <h3>Files & Finder</h3>
+                <div class="cap-prompt"><div class="cap-prompt-dot"></div><span>Find the budget spreadsheet</span></div>
+                <p>Spotlight search, open files, organize folders, check storage. Finds that PDF from last week even if you forgot the name.</p>
             </div>
-            <div class="feature-cell">
-                <div class="feature-focus-dot"></div>
-                <div class="feature-mono">06</div>
-                <div class="feature-text">
-                    <h3>Notch-Native UI</h3>
-                    <p>Lives in the menu bar. Drops down from the notch like it belongs there. Dismisses when you click away.</p>
+
+            <!-- Browser -->
+            <div class="cap-card">
+                <div class="cap-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect x="4" y="4" width="40" height="40" rx="10" fill="url(#safari-grad)"/>
+                        <circle cx="24" cy="24" r="12" fill="none" stroke="#fff" stroke-width="1.5"/>
+                        <path d="M24 12v2M24 34v2M12 24h2M34 24h2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M19 29l3-8 8-3-3 8z" fill="#fff" fill-opacity="0.9"/>
+                        <defs><linearGradient id="safari-grad" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#1da1f2"/><stop offset="1" stop-color="#3366cc"/></linearGradient></defs>
+                    </svg>
                 </div>
+                <h3>Web Browser</h3>
+                <div class="cap-prompt"><div class="cap-prompt-dot"></div><span>Check reviews for that new restaurant</span></div>
+                <p>Navigate websites, fill forms, interact with any web app. Uses your existing logged-in browser sessions — no extra login.</p>
             </div>
         </div>
     </section>
