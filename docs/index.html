@@ -152,29 +152,20 @@
         .hero-intro {
             font-size: 18px;
             color: var(--text-secondary);
-            max-width: 560px;
-            line-height: 1.6;
+            max-width: 600px;
+            line-height: 38px;
             margin-bottom: 56px;
             text-align: center;
         }
 
-        .hero-rotating-line {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 6px;
-            font-size: 18px;
-            color: var(--text-secondary);
-        }
-
-        .rotating-wrapper {
+        .hero-intro .rotating-wrapper {
             display: inline-block;
             position: relative;
-            height: 1.4em;
+            height: 38px;
             overflow: hidden;
-            width: 240px;
-            text-align: left;
+            width: 250px;
+            text-align: center;
+            vertical-align: bottom;
         }
 
         .rotating-track {
@@ -188,17 +179,17 @@
             font-style: italic;
             font-size: 20px;
             color: var(--accent-red);
-            height: 1.4em;
-            line-height: 1.4em;
+            height: 38px;
+            line-height: 38px;
             white-space: nowrap;
         }
 
         @keyframes rotate-tasks {
             0%, 16%   { transform: translateY(0); }
-            20%, 36%  { transform: translateY(-1.4em); }
-            40%, 56%  { transform: translateY(-2.8em); }
-            60%, 76%  { transform: translateY(-4.2em); }
-            80%, 96%  { transform: translateY(-5.6em); }
+            20%, 36%  { transform: translateY(-38px); }
+            40%, 56%  { transform: translateY(-76px); }
+            60%, 76%  { transform: translateY(-114px); }
+            80%, 96%  { transform: translateY(-152px); }
             100%      { transform: translateY(0); }
         }
 
@@ -925,7 +916,7 @@
         @media (max-width: 480px) {
             .hero h1 { font-size: 40px; }
             .hero-intro { font-size: 15px; }
-            .rotating-wrapper { width: 200px; }
+            .hero-intro .rotating-wrapper { width: 200px; }
             .features-header h2,
             .how-header h2,
             .examples-header h2,
@@ -952,16 +943,11 @@
     <section class="hero">
         <p class="hero-philosophy">Everything got smart. Your todo tracker didn't.</p>
         <h1>FlowState</h1>
-        <p class="hero-intro">Keeps you in flow state by offloading distracting tasks async.</p>
-        <div class="hero-rotating-line">
-            <span class="rotating-wrapper"><span class="rotating-track">
-                <span class="rotating-item">schedule meetings</span>
-                <span class="rotating-item">play songs</span>
-                <span class="rotating-item">get restaurant reviews</span>
-                <span class="rotating-item">send slack messages</span>
-                <span class="rotating-item">set do not disturb</span>
-            </span></span>
-        </div>
+        <p class="hero-intro">
+            Keeps you in flow state by offloading distracting tasks like
+            <span class="rotating-wrapper"><span class="rotating-track"><span class="rotating-item">schedule meetings</span><span class="rotating-item">play songs</span><span class="rotating-item">get restaurant reviews</span><span class="rotating-item">send slack messages</span><span class="rotating-item">set do not disturb</span></span></span>
+            async.
+        </p>
 
         <!-- Workflow Strip -->
         <div class="workflow">
