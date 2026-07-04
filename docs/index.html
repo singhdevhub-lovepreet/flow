@@ -402,12 +402,22 @@
         }
 
         .task-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
             font-size: 10px;
             color: var(--text-secondary);
             padding: 3px 8px;
             background: var(--bg-primary);
             border: 1px solid var(--bg-card-border);
             border-radius: var(--radius-full);
+        }
+
+        .task-tag .sf-icon {
+            fill: none;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .task-status {
@@ -717,12 +727,32 @@
         }
 
         .example-route {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-family: var(--font-mono);
             font-size: 10px;
             font-weight: 500;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .example-route .sf-icon,
+        .int-icon .sf-icon {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .int-icon .sf-icon {
+            width: 24px;
+            height: 24px;
         }
 
         /* ── Integrations ────────────────────────── */
@@ -768,13 +798,8 @@
         }
 
         .int-icon {
-            font-family: var(--font-mono);
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
         }
 
         .int-cell h3 {
@@ -996,17 +1021,17 @@
                         <div class="task-row">
                             <div class="task-circle"></div>
                             <span class="task-title">Schedule standup with team at 10am</span>
-                            <span class="task-status status-executing">running</span>
+                            <span class="task-tag"><svg class="sf-icon" style="width:10px;height:10px;stroke-width:2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg> running</span>
                         </div>
                         <div class="task-row">
                             <div class="task-circle"></div>
                             <span class="task-title">Play Blinding Lights</span>
-                            <span class="task-tag">entertainment</span>
+                            <span class="task-tag"><svg class="sf-icon" style="width:10px;height:10px;stroke-width:2" viewBox="0 0 24 24"><path d="M9 17V5l10-3v12"/><circle cx="6" cy="17" r="3" fill="currentColor" stroke="none"/><circle cx="16" cy="14" r="3" fill="currentColor" stroke="none"/></svg> music</span>
                         </div>
                         <div class="task-row">
                             <div class="task-circle"></div>
                             <span class="task-title">Turn on Do Not Disturb</span>
-                            <span class="task-tag">system</span>
+                            <span class="task-tag"><svg class="sf-icon" style="width:10px;height:10px;stroke-width:2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg> system</span>
                         </div>
                     </div>
 
@@ -1016,12 +1041,12 @@
                         <div class="task-row">
                             <div class="task-circle done"></div>
                             <span class="task-title completed">Send project update to #general</span>
-                            <span class="task-status status-done">done</span>
+                            <span class="task-tag"><svg class="sf-icon" style="width:10px;height:10px;stroke-width:2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> done</span>
                         </div>
                         <div class="task-row">
                             <div class="task-circle done"></div>
                             <span class="task-title completed">Create reminder to buy groceries</span>
-                            <span class="task-status status-done">done</span>
+                            <span class="task-tag"><svg class="sf-icon" style="width:10px;height:10px;stroke-width:2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg> done</span>
                         </div>
                     </div>
                 </div>
@@ -1132,43 +1157,43 @@
         <div class="example-list">
             <div class="example-row">
                 <span class="example-task">Schedule lunch with Sarah tomorrow at noon</span>
-                <span class="example-route">calendar</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>calendar</span>
             </div>
             <div class="example-row">
                 <span class="example-task">Play Blinding Lights by The Weeknd</span>
-                <span class="example-route">apple music</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><path d="M9 17V5l10-3v12"/><circle cx="6" cy="17" r="3" fill="currentColor" stroke="none"/><circle cx="16" cy="14" r="3" fill="currentColor" stroke="none"/></svg>music</span>
             </div>
             <div class="example-row">
                 <span class="example-task">Turn on Do Not Disturb</span>
-                <span class="example-route">system</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>system</span>
             </div>
             <div class="example-row">
                 <span class="example-task">Set brightness to 50%</span>
-                <span class="example-route">system</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>system</span>
             </div>
             <div class="example-row">
                 <span class="example-task">Open the Downloads folder</span>
-                <span class="example-route">finder</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>finder</span>
             </div>
             <div class="example-row">
                 <span class="example-task">Send a message to #general on Slack</span>
-                <span class="example-route">slack</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>slack</span>
             </div>
             <div class="example-row">
                 <span class="example-task">Reply to the latest tweet on my timeline</span>
-                <span class="example-route">browser</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>browser</span>
             </div>
             <div class="example-row">
                 <span class="example-task">Create a reminder to buy groceries</span>
-                <span class="example-route">reminders</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg>reminders</span>
             </div>
             <div class="example-row">
                 <span class="example-task">What's on my calendar today?</span>
-                <span class="example-route">calendar</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>calendar</span>
             </div>
             <div class="example-row">
                 <span class="example-task">Run my Morning Routine shortcut</span>
-                <span class="example-route">shortcuts</span>
+                <span class="example-route"><svg class="sf-icon" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor" stroke="none"/></svg>shortcuts</span>
             </div>
         </div>
     </section>
@@ -1182,22 +1207,22 @@
 
         <div class="int-grid">
             <div class="int-cell">
-                <div class="int-icon">mac</div>
+                <div class="int-icon"><svg class="sf-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
                 <h3>Mac Automator</h3>
                 <p>Calendar, Mail, Finder, Apple Music, System controls, Reminders, Notes. 200+ AppleScript actions.</p>
             </div>
             <div class="int-cell">
-                <div class="int-icon">browser</div>
+                <div class="int-icon"><svg class="sf-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
                 <h3>Web Browser</h3>
                 <p>Playwright-powered. Uses your existing browser sessions. No login needed.</p>
             </div>
             <div class="int-cell">
-                <div class="int-icon">shortcuts</div>
+                <div class="int-icon"><svg class="sf-icon" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor" stroke="none"/></svg></div>
                 <h3>Apple Shortcuts</h3>
                 <p>Run any macOS Shortcut by name. Leverage your existing automation library.</p>
             </div>
             <div class="int-cell">
-                <div class="int-icon">slack</div>
+                <div class="int-icon"><svg class="sf-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
                 <h3>Slack</h3>
                 <p>Send messages, read channels. Uses browser cookies — no bot or admin approval.</p>
             </div>

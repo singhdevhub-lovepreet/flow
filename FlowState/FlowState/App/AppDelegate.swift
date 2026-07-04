@@ -90,7 +90,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        // Register Option+Space as the global hotkey (like Macatron)
+        // Register Ctrl+Option+Space as the global hotkey (avoids Raycast conflict)
         var hotKeyID = EventHotKeyID(
             signature: OSType(0x464C4F57), // "FLOW"
             id: 1
@@ -98,7 +98,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let registerStatus = RegisterEventHotKey(
             UInt32(kVK_Space),
-            UInt32(optionKey),
+            UInt32(controlKey | optionKey),
             hotKeyID,
             GetApplicationEventTarget(),
             0,
@@ -106,9 +106,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
 
         if registerStatus != noErr {
-            log.error("Failed to register hotkey (Option+Space): \(registerStatus)")
+            log.error("Failed to register hotkey (Ctrl+Option+Space): \(registerStatus)")
         } else {
-            log.info("Global hotkey registered: Option+Space")
+            log.info("Global hotkey registered: Ctrl+Option+Space")
         }
 
         // Bridge Carbon callback → MainActor via notification
