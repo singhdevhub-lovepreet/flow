@@ -9,6 +9,9 @@ final class TodoItem {
     var createdAt: Date
     var completedAt: Date?
     var sortOrder: Int
+    var category: String?
+    var executionStatus: String?
+    var executionResult: String?
 
     init(title: String, tag: String? = nil, sortOrder: Int = 0) {
         self.title = title
@@ -17,5 +20,8 @@ final class TodoItem {
         self.createdAt = Date()
         self.completedAt = nil
         self.sortOrder = sortOrder
+        self.category = nil
+        self.executionStatus = nil
+        self.executionResult = nil
     }
 }

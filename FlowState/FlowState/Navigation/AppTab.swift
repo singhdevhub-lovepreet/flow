@@ -7,6 +7,7 @@ enum AppTab: Int, CaseIterable, Identifiable {
     case flow
     case pomodoro
     case insights
+    case mcps
 
     var id: Int { rawValue }
 
@@ -18,6 +19,7 @@ enum AppTab: Int, CaseIterable, Identifiable {
         case .flow: "wind"
         case .pomodoro: "timer"
         case .insights: "chart.bar"
+        case .mcps: "server.rack"
         }
     }
 
@@ -29,6 +31,7 @@ enum AppTab: Int, CaseIterable, Identifiable {
         case .flow: "Flow"
         case .pomodoro: "Pomodoro"
         case .insights: "Insights"
+        case .mcps: "MCPs"
         }
     }
 }

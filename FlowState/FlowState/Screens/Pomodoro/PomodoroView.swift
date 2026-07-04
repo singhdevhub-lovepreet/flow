@@ -180,5 +180,12 @@ struct PomodoroView: View {
         session.wasCompleted = engine.state == .completed
         session.endedAt = Date()
         modelContext.insert(session)
+
+        // Update DailyStats with focus time
+        StatsService.recordPomodoroSession(
+            sessionsCompleted: engine.sessionsCompleted,
+            focusDuration: engine.focusDuration,
+            in: modelContext
+        )
     }
 }

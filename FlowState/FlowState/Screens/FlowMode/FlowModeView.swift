@@ -158,5 +158,12 @@ struct FlowModeView: View {
         session.wasCompleted = engine.state == .completed
         session.endedAt = Date()
         modelContext.insert(session)
+
+        // Update DailyStats with focus time
+        StatsService.recordFlowSession(
+            startedAt: session.startedAt,
+            endedAt: session.endedAt!,
+            in: modelContext
+        )
     }
 }

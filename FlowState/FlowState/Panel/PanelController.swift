@@ -8,18 +8,21 @@ final class PanelController {
     private let modelContainer: ModelContainer
     private let flowEngine: FlowEngine
     private let pomodoroEngine: PomodoroEngine
+    private let claudeService: ClaudeService
 
     var isVisible: Bool { panel.isVisible }
 
-    init(modelContainer: ModelContainer, flowEngine: FlowEngine, pomodoroEngine: PomodoroEngine) {
+    init(modelContainer: ModelContainer, flowEngine: FlowEngine, pomodoroEngine: PomodoroEngine, claudeService: ClaudeService) {
         self.modelContainer = modelContainer
         self.flowEngine = flowEngine
         self.pomodoroEngine = pomodoroEngine
+        self.claudeService = claudeService
         self.panel = NotchPanel()
 
         let rootView = RootView()
             .environment(flowEngine)
             .environment(pomodoroEngine)
+            .environment(claudeService)
             .modelContainer(modelContainer)
 
         let hostingView = NSHostingView(rootView: rootView)

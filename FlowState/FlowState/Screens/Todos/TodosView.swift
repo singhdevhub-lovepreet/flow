@@ -1,8 +1,12 @@
 import SwiftUI
 import SwiftData
+import os
+
+private let log = Logger(subsystem: "com.flowstate.app", category: "TodosView")
 
 struct TodosView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(ClaudeService.self) private var claudeService
     @Query(sort: \TodoItem.sortOrder) private var todos: [TodoItem]
     @State private var newTodoTitle = ""
     @FocusState private var isTodoFieldFocused: Bool
@@ -111,11 +115,60 @@ struct TodosView: View {
         let todo = TodoItem(title: title, sortOrder: (todos.map(\.sortOrder).max() ?? 0) + 1)
         modelContext.insert(todo)
         newTodoTitle = ""
+
+        guard claudeService.isAvailable else {
+            log.info("Claude not available, skipping classification for: \"\(title)\"")
+            return
+        }
+
+        log.info("Starting classification pipeline for: \"\(title)\"")
+        Task {
+            await classifyAndExecute(todo)
+        }
+    }
+
+    @MainActor
+    private func classifyAndExecute(_ todo: TodoItem) async {
+        log.info("[Phase 1] Classifying: \"\(todo.title)\"")
+        todo.executionStatus = "classifying"
+
+        do {
+            let result = try await claudeService.classify(todo.title)
+            todo.category = result.category
+            log.info("[Phase 1] Category: \(result.category), executable: \(result.isExecutable)")
+
+            if result.isExecutable,
+               let server = result.mcpServer,
+               let prompt = result.executionPrompt {
+                log.info("[Phase 2] Executing via '\(server)': \"\(prompt)\"")
+                todo.executionStatus = "executing"
+                let execResult = try await claudeService.execute(prompt, mcpServer: server)
+                todo.isCompleted = true
+                todo.completedAt = Date()
+                todo.executionStatus = "executed"
+                todo.executionResult = execResult.result
+                StatsService.recordTaskCompleted(in: modelContext)
+                log.info("[Phase 2] Auto-completed: \"\(todo.title)\" — result: \(execResult.result?.prefix(200) ?? "(done)")")
+            } else {
+                todo.executionStatus = nil
+                log.info("[Done] Task categorized only (not executable): \"\(todo.title)\"")
+            }
+        } catch {
+            log.error("[Error] Pipeline failed for \"\(todo.title)\": \(error.localizedDescription)")
+            todo.executionStatus = todo.executionStatus == "classifying" ? nil : "failed"
+        }
     }
 
     private func toggleTodo(_ todo: TodoItem) {
         todo.isCompleted.toggle()
         todo.completedAt = todo.isCompleted ? Date() : nil
+
+        // Update DailyStats
+        if todo.isCompleted {
+            StatsService.recordTaskCompleted(in: modelContext)
+        } else {
+            StatsService.recordTaskUncompleted(in: modelContext)
+        }
     }
 
     private func deleteTodo(_ todo: TodoItem) {

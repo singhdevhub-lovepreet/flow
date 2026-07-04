@@ -30,6 +30,9 @@ struct RootView: View {
                 case .insights:
                     InsightsView()
                         .transition(.opacity)
+                case .mcps:
+                    MCPsView()
+                        .transition(.opacity)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
