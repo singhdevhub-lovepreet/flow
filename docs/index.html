@@ -28,7 +28,7 @@
             --dot-l3: #4a4a4a;
             --dot-l4: #7a7a7a;
             --dot-l5: #ffffff;
-            --accent-maroon: #8b2252;
+            --accent-red: #c41e3a;
             --spacing-xs: 6px;
             --spacing-sm: 10px;
             --spacing-md: 16px;
@@ -153,17 +153,27 @@
             font-size: 18px;
             color: var(--text-secondary);
             max-width: 560px;
-            line-height: 1.7;
+            line-height: 1.6;
             margin-bottom: 56px;
+            text-align: center;
         }
 
-        .hero-intro .rotating-wrapper {
+        .hero-rotating-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .rotating-wrapper {
             display: inline-block;
             position: relative;
-            height: 1.5em;
+            height: 1.4em;
             overflow: hidden;
-            vertical-align: bottom;
-            width: 220px;
+            width: 240px;
             text-align: left;
         }
 
@@ -176,18 +186,19 @@
         .rotating-item {
             font-family: var(--font-display);
             font-style: italic;
-            color: var(--accent-maroon);
-            height: 1.5em;
-            line-height: 1.5em;
+            font-size: 20px;
+            color: var(--accent-red);
+            height: 1.4em;
+            line-height: 1.4em;
             white-space: nowrap;
         }
 
         @keyframes rotate-tasks {
             0%, 16%   { transform: translateY(0); }
-            20%, 36%  { transform: translateY(-1.5em); }
-            40%, 56%  { transform: translateY(-3.0em); }
-            60%, 76%  { transform: translateY(-4.5em); }
-            80%, 96%  { transform: translateY(-6.0em); }
+            20%, 36%  { transform: translateY(-1.4em); }
+            40%, 56%  { transform: translateY(-2.8em); }
+            60%, 76%  { transform: translateY(-4.2em); }
+            80%, 96%  { transform: translateY(-5.6em); }
             100%      { transform: translateY(0); }
         }
 
@@ -515,18 +526,26 @@
         }
 
         .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--bg-card-border);
-            border: 1px solid var(--bg-card-border);
-            border-radius: var(--radius-md);
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
 
         .feature-cell {
-            background: var(--bg-card);
-            padding: 32px 28px;
+            display: flex;
+            gap: 24px;
+            padding: 28px 0;
+            border-bottom: 1px solid var(--bg-card-border);
+            align-items: flex-start;
+            transition: opacity 0.3s;
+        }
+
+        .feature-cell:first-child {
+            border-top: 1px solid var(--bg-card-border);
+        }
+
+        .feature-cell:hover {
+            opacity: 1;
         }
 
         .feature-mono {
@@ -536,20 +555,46 @@
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 12px;
+            flex-shrink: 0;
+            width: 32px;
+            padding-top: 2px;
         }
 
-        .feature-cell h3 {
+        .feature-text h3 {
             font-size: 15px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
-        .feature-cell p {
-            font-size: 12px;
+        .feature-text p {
+            font-size: 13px;
             color: var(--text-secondary);
             line-height: 1.6;
+        }
+
+        .feature-focus-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            flex-shrink: 0;
+            margin-top: 7px;
+            opacity: 0;
+            animation: feature-pulse 12s ease-in-out infinite;
+        }
+
+        .feature-cell:nth-child(1) .feature-focus-dot { animation-delay: 0s; }
+        .feature-cell:nth-child(2) .feature-focus-dot { animation-delay: 2s; }
+        .feature-cell:nth-child(3) .feature-focus-dot { animation-delay: 4s; }
+        .feature-cell:nth-child(4) .feature-focus-dot { animation-delay: 6s; }
+        .feature-cell:nth-child(5) .feature-focus-dot { animation-delay: 8s; }
+        .feature-cell:nth-child(6) .feature-focus-dot { animation-delay: 10s; }
+
+        @keyframes feature-pulse {
+            0%, 14% { opacity: 0; transform: scale(0.5); }
+            16%, 30% { opacity: 1; transform: scale(1); }
+            33%, 100% { opacity: 0; transform: scale(0.5); }
         }
 
         /* ── How It Works ────────────────────────── */
@@ -857,7 +902,7 @@
             .nav-links { display: none; }
             .hero { padding: 100px 20px 60px; }
             .features, .how-it-works, .examples, .integrations { padding: 80px 20px; }
-            .feature-grid { grid-template-columns: 1fr; }
+            .feature-cell { gap: 16px; }
             .int-grid { grid-template-columns: 1fr; }
             .panel-container { max-width: 100%; }
             footer { flex-direction: column; gap: 16px; text-align: center; }
@@ -880,7 +925,7 @@
         @media (max-width: 480px) {
             .hero h1 { font-size: 40px; }
             .hero-intro { font-size: 15px; }
-            .hero-intro .rotating-wrapper { width: 180px; }
+            .rotating-wrapper { width: 200px; }
             .features-header h2,
             .how-header h2,
             .examples-header h2,
@@ -907,8 +952,8 @@
     <section class="hero">
         <p class="hero-philosophy">Everything got smart. Your todo tracker didn't.</p>
         <h1>FlowState</h1>
-        <p class="hero-intro">
-            Keeps you in flow state by offloading distracting tasks
+        <p class="hero-intro">Keeps you in flow state by offloading distracting tasks async.</p>
+        <div class="hero-rotating-line">
             <span class="rotating-wrapper"><span class="rotating-track">
                 <span class="rotating-item">schedule meetings</span>
                 <span class="rotating-item">play songs</span>
@@ -916,8 +961,7 @@
                 <span class="rotating-item">send slack messages</span>
                 <span class="rotating-item">set do not disturb</span>
             </span></span>
-            async.
-        </p>
+        </div>
 
         <!-- Workflow Strip -->
         <div class="workflow">
@@ -1008,34 +1052,52 @@
 
         <div class="feature-grid">
             <div class="feature-cell">
+                <div class="feature-focus-dot"></div>
                 <div class="feature-mono">01</div>
-                <h3>Async Execution</h3>
-                <p>Tasks run in the background. No dialogs, no interruptions. Add a task, keep working — it completes silently.</p>
+                <div class="feature-text">
+                    <h3>Async Execution</h3>
+                    <p>Tasks run in the background. No dialogs, no interruptions. Add a task, keep working — it completes silently.</p>
+                </div>
             </div>
             <div class="feature-cell">
+                <div class="feature-focus-dot"></div>
                 <div class="feature-mono">02</div>
-                <h3>Auto Classification</h3>
-                <p>Every task is instantly categorized — work, system, entertainment, communication — and routed to the right MCP server.</p>
+                <div class="feature-text">
+                    <h3>Auto Classification</h3>
+                    <p>Every task is instantly categorized — work, system, entertainment, communication — and routed to the right MCP server.</p>
+                </div>
             </div>
             <div class="feature-cell">
+                <div class="feature-focus-dot"></div>
                 <div class="feature-mono">03</div>
-                <h3>Mac Automation</h3>
-                <p>Calendar, Mail, Finder, Apple Music, System Settings, Reminders, Notes — 200+ macOS actions via AppleScript.</p>
+                <div class="feature-text">
+                    <h3>Mac Automation</h3>
+                    <p>Calendar, Mail, Finder, Apple Music, System Settings, Reminders, Notes — 200+ macOS actions via AppleScript.</p>
+                </div>
             </div>
             <div class="feature-cell">
+                <div class="feature-focus-dot"></div>
                 <div class="feature-mono">04</div>
-                <h3>Browser Control</h3>
-                <p>Navigate websites, fill forms, post tweets, interact with any web app — using your existing logged-in sessions.</p>
+                <div class="feature-text">
+                    <h3>Browser Control</h3>
+                    <p>Navigate websites, fill forms, post tweets, interact with any web app — using your existing logged-in sessions.</p>
+                </div>
             </div>
             <div class="feature-cell">
+                <div class="feature-focus-dot"></div>
                 <div class="feature-mono">05</div>
-                <h3>Focus Tracking</h3>
-                <p>Built-in Flow Mode and Pomodoro timer. All focus time and completed tasks sync to your daily stats automatically.</p>
+                <div class="feature-text">
+                    <h3>Focus Tracking</h3>
+                    <p>Built-in Flow Mode and Pomodoro timer. All focus time and completed tasks sync to your daily stats automatically.</p>
+                </div>
             </div>
             <div class="feature-cell">
+                <div class="feature-focus-dot"></div>
                 <div class="feature-mono">06</div>
-                <h3>Notch-Native UI</h3>
-                <p>Lives in the menu bar. Drops down from the notch like it belongs there. Dismisses when you click away.</p>
+                <div class="feature-text">
+                    <h3>Notch-Native UI</h3>
+                    <p>Lives in the menu bar. Drops down from the notch like it belongs there. Dismisses when you click away.</p>
+                </div>
             </div>
         </div>
     </section>
