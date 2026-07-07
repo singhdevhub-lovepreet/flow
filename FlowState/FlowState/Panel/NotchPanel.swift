@@ -19,13 +19,18 @@ final class NotchPanel: NSPanel {
         hidesOnDeactivate = false
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
-        // Rounded corners
-        contentView?.wantsLayer = true
-        contentView?.layer?.cornerRadius = 20
-        contentView?.layer?.masksToBounds = true
-        contentView?.layer?.backgroundColor = NSColor.black.cgColor
-        contentView?.layer?.borderColor = NSColor(white: 0.1, alpha: 1).cgColor
-        contentView?.layer?.borderWidth = 1
+        // Frosted glass background
+        let visualEffect = NSVisualEffectView()
+        visualEffect.material = .hudWindow
+        visualEffect.blendingMode = .behindWindow
+        visualEffect.state = .active
+        visualEffect.appearance = NSAppearance(named: .darkAqua)
+        visualEffect.wantsLayer = true
+        visualEffect.layer?.cornerRadius = 20
+        visualEffect.layer?.masksToBounds = true
+        visualEffect.layer?.borderColor = NSColor(white: 0.3, alpha: 0.2).cgColor
+        visualEffect.layer?.borderWidth = 1
+        contentView = visualEffect
     }
 
     override func resignKey() {

@@ -9,7 +9,7 @@ struct CTAButton: View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(isPrimary ? FSColors.bgPrimary : FSColors.textPrimary)
+                .foregroundStyle(isPrimary ? Color.black : FSColors.textPrimary)
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
                 .background(isPrimary ? FSColors.textPrimary : Color.clear)

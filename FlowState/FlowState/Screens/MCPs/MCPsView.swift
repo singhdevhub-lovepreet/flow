@@ -122,26 +122,41 @@ struct MCPsView: View {
     @State private var connectingEntry: MCPCatalogEntry?
     @State private var envValues: [String: String] = [:]
 
+    // Custom server overlay state
+    @State private var showingCustomOverlay = false
+    @State private var customName = ""
+    @State private var customCommand = "npx"
+    @State private var customArgs = ""
+    @State private var customDescription = ""
+    @State private var customEnvPairs: [(key: String, value: String)] = []
+
     private var connectedCount: Int {
-        catalog.filter { claudeService.isServerConnected($0.id) }.count
+        claudeService.mcpServers.count
     }
 
     var body: some View {
         ZStack {
             // Main content
             mainContent
-                .opacity(connectingEntry == nil ? 1 : 0)
-                .allowsHitTesting(connectingEntry == nil)
+                .opacity(connectingEntry == nil && !showingCustomOverlay ? 1 : 0)
+                .allowsHitTesting(connectingEntry == nil && !showingCustomOverlay)
 
             // Inline connect panel (replaces .sheet which breaks NSPanel)
             if let entry = connectingEntry {
                 connectOverlay(entry: entry)
                     .transition(.opacity.combined(with: .scale(scale: 0.97)))
             }
+
+            // Custom server overlay
+            if showingCustomOverlay {
+                customServerOverlay()
+                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            }
         }
         .animation(.easeInOut(duration: 0.2), value: connectingEntry?.id)
+        .animation(.easeInOut(duration: 0.2), value: showingCustomOverlay)
         .onAppear {
-            log.info("MCPs tab opened — \(connectedCount)/\(catalog.count) connected")
+            log.info("MCPs tab opened — \(connectedCount) connected")
         }
     }
 
@@ -164,7 +179,7 @@ struct MCPsView: View {
                         Text("Integrations")
                             .font(FSTypography.displayFallbackMD)
                             .foregroundStyle(FSColors.textPrimary)
-                        Text("\(connectedCount) of \(catalog.count) connected")
+                        Text("\(connectedCount) connected")
                             .font(FSTypography.uiCaption)
                             .foregroundStyle(FSColors.textSecondary)
                     }
@@ -197,18 +212,50 @@ struct MCPsView: View {
                         }
                         .cardStyle()
 
-                        // Extra servers from settings.json not in catalog
+                        // Other servers (always visible) with Add button
                         let extraServers = claudeService.mcpServers.filter { name in
                             !catalog.contains { $0.id == name }
                         }
-                        if !extraServers.isEmpty {
-                            VStack(alignment: .leading, spacing: FSSpacing.sm) {
+                        VStack(alignment: .leading, spacing: FSSpacing.sm) {
+                            HStack {
                                 SectionLabel(text: "Other Servers")
+                                Spacer()
+                                Button {
+                                    showingCustomOverlay = true
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "plus")
+                                            .font(.system(size: 10, weight: .semibold))
+                                        Text("Add")
+                                            .font(.system(size: 11, weight: .medium))
+                                    }
+                                    .foregroundStyle(FSColors.textSecondary)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 4)
+                                    .background(FSColors.bgCard)
+                                    .clipShape(Capsule())
+                                    .overlay(Capsule().stroke(FSColors.bgCardBorder, lineWidth: 1))
+                                }
+                                .buttonStyle(.plain)
+                            }
+
+                            if extraServers.isEmpty {
+                                Text("Add custom MCP servers like Atlassian, GitHub, and more.")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(FSColors.textMuted)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(FSSpacing.md)
+                                    .cardStyle()
+                            } else {
                                 VStack(spacing: 0) {
                                     ForEach(extraServers, id: \.self) { server in
                                         ExtraServerRow(
                                             name: server,
-                                            config: claudeService.mcpServerConfigs[server]
+                                            config: claudeService.mcpServerConfigs[server],
+                                            onDisconnect: {
+                                                log.info("Disconnecting custom server '\(server)'")
+                                                claudeService.removeServer(name: server)
+                                            }
                                         )
                                         if server != extraServers.last {
                                             Divider()
@@ -418,6 +465,194 @@ struct MCPsView: View {
         .background(FSColors.bgPrimary)
     }
 
+    // MARK: - Custom Server Overlay
+
+    private func customServerOverlay() -> some View {
+        VStack(spacing: 0) {
+            // Header with back button
+            HStack {
+                Button {
+                    showingCustomOverlay = false
+                    resetCustomFields()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 12, weight: .semibold))
+                        Text("Back")
+                            .font(.system(size: 13))
+                    }
+                    .foregroundStyle(FSColors.textSecondary)
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+            }
+            .padding(.horizontal, FSSpacing.screenPadding)
+            .padding(.top, FSSpacing.md)
+            .padding(.bottom, FSSpacing.sm)
+
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: FSSpacing.lg) {
+                    // Title
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Add Custom Server")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(FSColors.textPrimary)
+                        Text("Connect any MCP-compatible server")
+                            .font(.system(size: 12))
+                            .foregroundStyle(FSColors.textSecondary)
+                    }
+
+                    // Form fields
+                    VStack(alignment: .leading, spacing: FSSpacing.md) {
+                        customTextField(label: "Server Name", placeholder: "e.g. atlassian", text: $customName)
+                        customTextField(label: "Command", placeholder: "npx", text: $customCommand)
+                        customTextField(label: "Arguments", placeholder: "-y @atlassian/mcp-server", text: $customArgs)
+                        customTextField(label: "Description (optional)", placeholder: "Jira issue management", text: $customDescription)
+
+                        // Environment variables
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Environment Variables")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(FSColors.textSecondary)
+                                Spacer()
+                                Button {
+                                    customEnvPairs.append((key: "", value: ""))
+                                } label: {
+                                    HStack(spacing: 3) {
+                                        Image(systemName: "plus")
+                                            .font(.system(size: 9, weight: .semibold))
+                                        Text("Add")
+                                            .font(.system(size: 10, weight: .medium))
+                                    }
+                                    .foregroundStyle(FSColors.textSecondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
+
+                            ForEach(Array(customEnvPairs.enumerated()), id: \.offset) { index, _ in
+                                HStack(spacing: 8) {
+                                    TextField("KEY", text: Binding(
+                                        get: { customEnvPairs[index].key },
+                                        set: { customEnvPairs[index].key = $0 }
+                                    ))
+                                    .font(.system(size: 11, design: .monospaced))
+                                    .textFieldStyle(.plain)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 6)
+                                    .background(FSColors.bgCard)
+                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(FSColors.bgCardBorder, lineWidth: 1))
+                                    .frame(maxWidth: 120)
+
+                                    TextField("value", text: Binding(
+                                        get: { customEnvPairs[index].value },
+                                        set: { customEnvPairs[index].value = $0 }
+                                    ))
+                                    .font(.system(size: 11, design: .monospaced))
+                                    .textFieldStyle(.plain)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 6)
+                                    .background(FSColors.bgCard)
+                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                                    .overlay(RoundedRectangle(cornerRadius: 6).stroke(FSColors.bgCardBorder, lineWidth: 1))
+
+                                    Button {
+                                        customEnvPairs.remove(at: index)
+                                    } label: {
+                                        Image(systemName: "xmark")
+                                            .font(.system(size: 9, weight: .semibold))
+                                            .foregroundStyle(FSColors.textMuted)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+
+                    // Add Server button
+                    let canAdd = !customName.trimmingCharacters(in: .whitespaces).isEmpty
+                        && !customCommand.trimmingCharacters(in: .whitespaces).isEmpty
+                        && !customArgs.trimmingCharacters(in: .whitespaces).isEmpty
+
+                    Button {
+                        let args = customArgs
+                            .trimmingCharacters(in: .whitespaces)
+                            .components(separatedBy: " ")
+                            .filter { !$0.isEmpty }
+                        var env: [String: String] = [:]
+                        for pair in customEnvPairs where !pair.key.isEmpty {
+                            env[pair.key] = pair.value
+                        }
+                        let name = customName
+                            .trimmingCharacters(in: .whitespaces)
+                            .lowercased()
+                            .replacingOccurrences(of: " ", with: "-")
+                        let desc = customDescription.trimmingCharacters(in: .whitespaces)
+                        log.info("Adding custom server '\(name)'")
+                        claudeService.addServer(
+                            name: name,
+                            command: customCommand.trimmingCharacters(in: .whitespaces),
+                            args: args,
+                            env: env,
+                            description: desc.isEmpty ? nil : desc
+                        )
+                        showingCustomOverlay = false
+                        resetCustomFields()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 14))
+                            Text("Add Server")
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(canAdd ? Color.blue.opacity(0.9) : Color.gray.opacity(0.3))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!canAdd)
+                }
+                .screenPadding()
+                .padding(.top, FSSpacing.sm)
+                .padding(.bottom, FSSpacing.md)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(FSColors.bgPrimary)
+    }
+
+    @ViewBuilder
+    private func customTextField(label: String, placeholder: String, text: Binding<String>) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(FSColors.textSecondary)
+            TextField(placeholder, text: text)
+                .font(.system(size: 12))
+                .textFieldStyle(.plain)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(FSColors.bgCard)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(FSColors.bgCardBorder, lineWidth: 1)
+                )
+        }
+    }
+
+    private func resetCustomFields() {
+        customName = ""
+        customCommand = "npx"
+        customArgs = ""
+        customDescription = ""
+        customEnvPairs = []
+    }
+
     private var unavailableCard: some View {
         VStack(spacing: FSSpacing.sm) {
             Image(systemName: "exclamationmark.triangle")
@@ -442,11 +677,20 @@ private struct AppIconView: View {
     let entry: MCPCatalogEntry
     let size: CGFloat
 
+    private func loadIcon(from path: String) -> NSImage {
+        let icon = NSWorkspace.shared.icon(forFile: path)
+        icon.isTemplate = false
+        icon.size = NSSize(width: size * 2, height: size * 2)
+        return icon
+    }
+
     var body: some View {
         if let path = entry.appIconPath,
            FileManager.default.fileExists(atPath: path) {
-            Image(nsImage: NSWorkspace.shared.icon(forFile: path))
+            Image(nsImage: loadIcon(from: path))
+                .renderingMode(.original)
                 .resizable()
+                .interpolation(.high)
                 .aspectRatio(contentMode: .fit)
                 .frame(width: size, height: size)
         } else {
@@ -529,6 +773,7 @@ private struct MCPCatalogRow: View {
 private struct ExtraServerRow: View {
     let name: String
     let config: MCPServerConfig?
+    var onDisconnect: (() -> Void)?
 
     var body: some View {
         HStack(spacing: 12) {
@@ -544,7 +789,8 @@ private struct ExtraServerRow: View {
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(FSColors.textPrimary)
                 if let config {
-                    Text("\(config.command) \(config.args.joined(separator: " "))")
+                    let subtitle = config.description ?? "\(config.command) \(config.args.joined(separator: " "))"
+                    Text(subtitle)
                         .font(.system(size: 10))
                         .foregroundStyle(FSColors.textMuted)
                         .lineLimit(1)
@@ -553,18 +799,29 @@ private struct ExtraServerRow: View {
 
             Spacer()
 
-            HStack(spacing: 5) {
-                Circle()
-                    .fill(.green)
-                    .frame(width: 6, height: 6)
-                Text("Connected")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.green)
+            HStack(spacing: 8) {
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(.green)
+                        .frame(width: 6, height: 6)
+                    Text("Connected")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.green)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.green.opacity(0.08))
+                .clipShape(Capsule())
+
+                if let onDisconnect {
+                    Button(action: onDisconnect) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(FSColors.textMuted)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(Color.green.opacity(0.08))
-            .clipShape(Capsule())
         }
         .padding(.horizontal, FSSpacing.md)
         .padding(.vertical, 11)

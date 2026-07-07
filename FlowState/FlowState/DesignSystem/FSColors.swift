@@ -1,14 +1,14 @@
 import SwiftUI
 
 enum FSColors {
-    static let bgPrimary    = Color(hex: "000000")
-    static let bgSurface    = Color(hex: "0A0A0A")
-    static let bgCard       = Color(hex: "111111")
-    static let bgCardBorder = Color(hex: "1A1A1A")
+    static let bgPrimary    = Color.clear
+    static let bgSurface    = Color(white: 0.06, opacity: 0.65)
+    static let bgCard       = Color(white: 0.10, opacity: 0.6)
+    static let bgCardBorder = Color(white: 0.35, opacity: 0.25)
 
     static let textPrimary   = Color.white
-    static let textSecondary = Color(hex: "888888")
-    static let textMuted     = Color(hex: "444444")
+    static let textSecondary = Color(hex: "AAAAAA")
+    static let textMuted     = Color(hex: "777777")
 
     // Contribution dot intensity levels
     static let dotL1 = Color(hex: "1A1A1A")

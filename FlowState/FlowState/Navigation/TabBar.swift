@@ -21,7 +21,7 @@ struct TabBar: View {
                 .buttonStyle(.plain)
             }
         }
-        .background(FSColors.bgPrimary)
+        .background(FSColors.bgSurface)
         .overlay(alignment: .top) {
             Rectangle()
                 .fill(FSColors.bgCardBorder)

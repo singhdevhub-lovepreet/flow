@@ -28,6 +28,8 @@ final class PanelController {
         let hostingView = NSHostingView(rootView: rootView)
         hostingView.frame = panel.contentView!.bounds
         hostingView.autoresizingMask = [.width, .height]
+        hostingView.wantsLayer = true
+        hostingView.layer?.backgroundColor = NSColor.clear.cgColor
         panel.contentView?.addSubview(hostingView)
 
         resignObserver = NotificationCenter.default.addObserver(

@@ -70,6 +70,21 @@ final class ClaudeService: @unchecked Sendable {
         let schemaData = try JSONSerialization.data(withJSONObject: schema)
         let schemaString = String(data: schemaData, encoding: .utf8) ?? "{}"
 
+        // Build dynamic descriptions for custom (non-catalog) servers
+        let catalogIDs: Set<String> = ["mac", "browser", "shortcuts", "slack"]
+        let customDescriptions = mcpServerConfigs
+            .filter { !catalogIDs.contains($0.key) }
+            .map { name, config in
+                let desc = config.description ?? "Custom MCP server"
+                return "- \"\(name)\": \(desc)"
+            }
+            .sorted()
+        let customBlock = customDescriptions.isEmpty ? "" : """
+            \nFor other connected servers: \
+            \(customDescriptions.joined(separator: " \\\n")) \
+            If the task seems relevant to a custom server, set is_executable to true.
+            """
+
         let systemPrompt = """
             You are a task classifier. Do NOT execute, browse, search, or perform any actions. \
             Just classify the task into a category and return structured JSON. \
@@ -86,6 +101,7 @@ final class ClaudeService: @unchecked Sendable {
             Use for web interactions (Twitter/X, YouTube, Reddit, etc.). \
             - "shortcuts": Run macOS Shortcuts by name. Use when user says "run my X shortcut". \
             - "slack": Send messages, read channels on Slack. \
+            \(customBlock) \
             If a task can be executed by one of these servers, set is_executable to true. \
             Prefer "mac" for local Mac tasks. Prefer "browser" for web tasks. \
             Otherwise set is_executable to false.
@@ -94,7 +110,7 @@ final class ClaudeService: @unchecked Sendable {
         let args = [
             claudePath,
             "-p",
-            "--model", "haiku",
+            "--model", "sonnet",
             "--output-format", "json",
             "--json-schema", schemaString,
             "--system-prompt", systemPrompt,
@@ -172,7 +188,7 @@ final class ClaudeService: @unchecked Sendable {
         let args = [
             claudePath,
             "-p",
-            "--model", "haiku",
+            "--model", "sonnet",
             "--output-format", "json",
             "--mcp-config", mcpConfig,
             "--allowedTools", allowedTools,
@@ -233,9 +249,13 @@ final class ClaudeService: @unchecked Sendable {
             if let configDict = config as? [String: Any] {
                 let command = configDict["command"] as? String ?? "unknown"
                 let args = configDict["args"] as? [String] ?? []
+                let env = configDict["env"] as? [String: String] ?? [:]
+                let description = configDict["_flowstate_description"] as? String
                 mcpServerConfigs[name] = MCPServerConfig(
                     command: command,
-                    args: args
+                    args: args,
+                    env: env,
+                    description: description
                 )
                 log.info("Found MCP server: \(name) (command: \(command))")
             }
@@ -250,7 +270,7 @@ final class ClaudeService: @unchecked Sendable {
         NSHomeDirectory() + "/.claude/settings.json"
     }
 
-    func addServer(name: String, command: String, args: [String], env: [String: String] = [:]) {
+    func addServer(name: String, command: String, args: [String], env: [String: String] = [:], description: String? = nil) {
         log.info("Adding MCP server '\(name)' to settings.json")
 
         var root = readSettingsFile()
@@ -262,6 +282,9 @@ final class ClaudeService: @unchecked Sendable {
         ]
         if !env.isEmpty {
             entry["env"] = env
+        }
+        if let description, !description.isEmpty {
+            entry["_flowstate_description"] = description
         }
         servers[name] = entry
         root["mcpServers"] = servers
@@ -405,6 +428,8 @@ final class ClaudeService: @unchecked Sendable {
 struct MCPServerConfig {
     let command: String
     let args: [String]
+    var env: [String: String]
+    var description: String?
 }
 
 enum ClaudeError: LocalizedError {

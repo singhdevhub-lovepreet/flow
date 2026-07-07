@@ -105,7 +105,7 @@ struct TodoRowView: View {
                         .padding(FSSpacing.md)
                 }
                 .frame(maxHeight: 200)
-                .background(FSColors.bgPrimary.opacity(0.5))
+                .background(FSColors.bgSurface)
                 .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
             }
         }
@@ -185,7 +185,7 @@ struct TodoRowView: View {
 
 // MARK: - Category Mapping
 
-private enum CategoryInfo {
+enum CategoryInfo {
     case work, focus, entertainment, communication, system, personal, health, unknown
 
     var color: Color {
